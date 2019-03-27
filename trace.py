@@ -4,16 +4,18 @@ import subprocess
 import sys
 import urllib.request
 
-# sys.argv.append('ya.ru')
-
 help_words = {'/?', '-h', '--help', '-help'}
 
 if len(sys.argv) != 2 or sys.argv[1] in help_words:
     print(
-        '\nThis utility can make tracing to the specified node and show intermediate nodes and their autonomous system\n\nUSAGE: python trace.py  IPAddressOrDomainName')
+        '\nThis utility can make tracing to the specified node and show intermediate nodes and their autonomous system\nUse parameter -i to use interactive mode\n\nUSAGE: python trace.py  [IPAddressOrDomainName]\n\nExample: python trace.py ya.ru')
     sys.exit()
-
-ip = sys.argv[1]
+else:
+    if sys.argv[1] == '-i':
+        print('Please enter IP address or domain name:')
+        ip = input()
+    else:
+        ip = sys.argv[1]
 
 try:
     tracing = subprocess.check_output('tracert -4 -d ' + ip, shell=True).decode('cp866')
@@ -26,7 +28,6 @@ def get_information_about_ip(ip):
     return json.loads(urllib.request.urlopen('https://ipinfo.io/' + ip + '/json').read())
 
 
-print(tracing)
 rslt = re.findall('\d+.\d+.\d+.\d+', tracing)[1:]
 
 full_information = []
